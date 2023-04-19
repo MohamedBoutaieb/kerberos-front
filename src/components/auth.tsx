@@ -1,7 +1,8 @@
 import React from "react";
 import { Button, Checkbox, Form, Input } from 'antd';
-
+import { useAppDispatch, useAppSelector } from "../config/store";
 const Auth = ()=>{
+  const registration = useAppSelector(state => state.register);
     const onFinish = (values: any) => {
         console.log('Success:', values);
       };

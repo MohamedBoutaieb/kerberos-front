@@ -1,0 +1,73 @@
+
+import {
+  BinaryToTextEncoding,
+  createCipheriv,
+  createDecipheriv,
+  createHash,
+  randomBytes,
+} from 'crypto';
+import { Encryption } from '../models/response';
+
+export class CryptoService {
+  constructor() {}
+  public encrypt(
+    text: Object,
+    key: string,
+    algorithm: string = 'aes-256-cbc',
+    keyEncoding: BufferEncoding = 'hex',
+    inputEncoding: BufferEncoding = 'utf8',
+    outputEncoding: BufferEncoding = 'base64',
+  ): Encryption {
+    const iv = this.genKey(16);
+    const ivBuf = Buffer.from(iv, keyEncoding);
+    const keyBuffer = Buffer.from(key, keyEncoding);
+    const cipher = createCipheriv(algorithm, keyBuffer, ivBuf);
+    let encryption = cipher.update(
+      JSON.stringify(text),
+      inputEncoding,
+      outputEncoding,
+    );
+    encryption += cipher.final(outputEncoding);
+
+    return {
+      ciphertext: encryption,
+      encoding: outputEncoding,
+      algorithm: algorithm,
+      iv: iv,
+    };
+  }
+  public decrypt(
+    encryption: Encryption,
+    key: string,
+    keyEncoding: BufferEncoding = 'hex',
+    outputEncoding: BufferEncoding = 'utf8',
+  ) {
+    const { ciphertext, iv, algorithm, encoding } = encryption;
+    const ivBuf = Buffer.from(iv, keyEncoding);
+    const keyBuffer = Buffer.from(key, keyEncoding);
+    const decipher = createDecipheriv(algorithm, keyBuffer, ivBuf);
+    const decryption = decipher.update(ciphertext, encoding, outputEncoding);
+    return decryption + decipher.final(outputEncoding);
+  }
+  public hash(
+    text: string,
+    algorithm: string = 'sha256',
+    outputEncoding: BinaryToTextEncoding = 'hex',
+  ) {
+    return createHash(algorithm).update(String(text)).digest(outputEncoding);
+  }
+  public genKey(keySize: number, encoding: BufferEncoding = 'hex') {
+    return randomBytes(keySize).toString(encoding);
+  }
+  public getLifetime(requestedLifetime: number, lifetimeInterval : any) {
+    if (requestedLifetime < lifetimeInterval.max) {
+      if (requestedLifetime > lifetimeInterval.min) {
+        return requestedLifetime + new Date().getTime();
+      } else {
+        return lifetimeInterval.min + new Date().getTime();
+      }
+    } else {
+      return lifetimeInterval.max + new Date().getTime();
+    }
+  }
+}

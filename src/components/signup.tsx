@@ -1,16 +1,52 @@
 import React from "react";
 import { Button, Checkbox, Form, Input } from "antd";
+import { useAppDispatch, useAppSelector } from "../config/store";
+import { register } from "../config/dh.reducer";
+import { CryptoService } from "../services/crypto.service";
+import { DhService } from "../services/dh.service";
 
 const Register = () => {
+  const dispatch = useAppDispatch();
+  const registration = useAppSelector((state) => state.register);
+  const serv: CryptoService = new CryptoService();
+  const dh: DhService = new DhService();
   const onFinish = (values: any) => {
-    console.log("Success:", values);
+    const publicKey = dh.getPublicKey("modp15");
+    const payload = {
+      username: values.username,
+      publicKey: publicKey.key,
+      group: "modp15",
+      encoding: "hex",
+    };
+    dispatch(register(payload)).then(() => {
+      if (registration.publicKey !== "") {
+          dh.generateKey(publicKey.group, registration.publicKey, "hex")
+        
+      }else{
+            console.log("error");
+      }
+
+      return "";
+    });
   };
 
   const onFinishFailed = (errorInfo: any) => {
     console.log("Failed:", errorInfo);
   };
+
   return (
-    <div style={{display: 'flex',flexDirection: 'column',justifyContent: 'center'}}>
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "center",
+      }}
+    >
+      {" "}
+      <div style={{ backgroundColor: "red", width: "300px", height: "50px" }}>
+        {" "}
+        {registration.publicKey}
+      </div>
       <Form
         name="basic"
         labelCol={{ span: 8 }}
@@ -104,7 +140,7 @@ const Register = () => {
           </Button>
         </Form.Item>
       </Form>
-      <div style={{textAlign: "center"}}>
+      <div style={{ textAlign: "center" }}>
         already have an account ? <a href="/login">Sign In</a>
       </div>
     </div>

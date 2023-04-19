@@ -1,13 +1,20 @@
 import { configureStore, ThunkAction, AnyAction } from "@reduxjs/toolkit";
 import { loadingBarMiddleware } from "react-redux-loading-bar";
 import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux";
+import register from "./dh.reducer";
 const store = configureStore({
-  reducer: {  },
+  reducer: { register },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
       serializableCheck: {
         // Ignore these field paths in all actions
-        ignoredActionPaths: ['payload.config', 'payload.request','payload.headers', 'error', 'meta.arg'],
+        ignoredActionPaths: [
+          "payload.config",
+          "payload.request",
+          "payload.headers",
+          "error",
+          "meta.arg",
+        ],
       },
     }).concat(
       loadingBarMiddleware({
