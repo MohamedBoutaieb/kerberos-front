@@ -1,7 +1,7 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
 
-const url = "http://localhost:5000/add";
+const url = "http://localhost:5000/";
 const initialState = {
   loading: false,
   error: false,
@@ -14,7 +14,7 @@ export const register = createAsyncThunk("register/register", async () => {
   return axios.post<any>(url, {});
 });
 export const RegisterSlice = createSlice({
-  name: "loanRequest",
+  name: "",
   initialState: initialState as registerState,
   reducers: {
     reset() {

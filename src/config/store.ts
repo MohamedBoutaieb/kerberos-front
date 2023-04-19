@@ -1,8 +1,8 @@
 import { configureStore, ThunkAction, AnyAction } from "@reduxjs/toolkit";
-
+import { loadingBarMiddleware } from "react-redux-loading-bar";
 import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux";
 const store = configureStore({
-  reducer: {  null },
+  reducer: {  },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
       serializableCheck: {
